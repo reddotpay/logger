@@ -1,8 +1,8 @@
 package logger
 
 import (
+	"encoding/json"
 	"fmt"
-	"regexp"
 	"strings"
 
 	"go.uber.org/zap"
@@ -27,14 +27,31 @@ func New() *zap.Logger {
 
 // MaskCard masks card number if exists
 func MaskCard(s string) string {
-	r := regexp.MustCompile(`([0-9]{16,})`)
-	number := r.FindString(s)
-
-	if number != "" {
-		l := len(number)
-		maskedNumber := fmt.Sprintf("%s%s", strings.Repeat("*", l-4), number[l-4:])
-		s = r.ReplaceAllString(s, maskedNumber)
+	m := map[string]string{}
+	if err := json.Unmarshal([]byte(s), &m); err != nil {
+		return s
 	}
 
-	return s
+	for k, v := range m {
+		switch k {
+		case "securityCode":
+			m[k] = mask(v, len(v))
+		case "cvv":
+			m[k] = mask(v, len(v))
+		case "number":
+			m[k] = mask(v, 4)
+		}
+	}
+
+	b, _ := json.Marshal(m)
+
+	return string(b)
+}
+
+func mask(str string, size int) string {
+	if len(str) == size {
+		return strings.Repeat("*", size)
+	}
+
+	return fmt.Sprintf("%s%s", strings.Repeat("*", len(str)-size), str[len(str)-size:])
 }
