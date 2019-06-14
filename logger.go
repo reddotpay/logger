@@ -33,12 +33,10 @@ func MaskCard(s string) string {
 	}
 
 	for k, v := range m {
-		switch k {
-		case "securityCode":
+		switch strings.ToLower(k) {
+		case "cvv", "securitycode":
 			m[k] = mask(v, len(v))
-		case "cvv":
-			m[k] = mask(v, len(v))
-		case "number":
+		case "number", "cardnumber", "cardnum":
 			m[k] = mask(v, 4)
 		}
 	}
