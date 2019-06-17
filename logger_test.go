@@ -5,7 +5,14 @@ import (
 
 	"github.com/reddotpay/logger"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
 )
+
+func TestLogger_New(t *testing.T) {
+	l := logger.New()
+	assert := assert.New(t)
+	assert.IsType(&zap.Logger{}, l)
+}
 
 func TestLogger_MaskNumber(t *testing.T) {
 	s := `{"number":"4111111111111111"}`
@@ -22,9 +29,14 @@ func TestLogger_MaskCVV(t *testing.T) {
 	assert.Equal(t, "{\"cvv\":\"***\"}", logger.MaskCard(s))
 }
 
+func TestLogger_MaskNestedCard(t *testing.T) {
+	s := `{"card":{"number":"4111111111111111"}}`
+	assert.Equal(t, "{\"card\":{\"number\":\"************1111\"}}", logger.MaskCard(s))
+}
+
 func TestLogger_MaskCard(t *testing.T) {
-	s := `{"number":"4111111111111111","cvv":"123"}`
-	assert.Equal(t, "{\"cvv\":\"***\",\"number\":\"************1111\"}", logger.MaskCard(s))
+	s := `{"number":"4111111111111111","cvv":"123","card":{"number":"4111111111111111"}}`
+	assert.Equal(t, "{\"card\":{\"number\":\"************1111\"},\"cvv\":\"***\",\"number\":\"************1111\"}", logger.MaskCard(s))
 }
 
 func TestLogger_MaskCard_EmptyString(t *testing.T) {

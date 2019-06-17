@@ -27,7 +27,7 @@ func New() *zap.Logger {
 
 // MaskCard masks card number if exists
 func MaskCard(s string) string {
-	m := map[string]string{}
+	m := map[string]interface{}{}
 	if err := json.Unmarshal([]byte(s), &m); err != nil {
 		return s
 	}
@@ -35,9 +35,20 @@ func MaskCard(s string) string {
 	for k, v := range m {
 		switch strings.ToLower(k) {
 		case "cvv", "securitycode":
-			m[k] = mask(v, len(v))
+			if value, ok := v.(string); ok {
+				m[k] = mask(value, len(value))
+			}
 		case "number", "cardnumber", "cardnum":
-			m[k] = mask(v, 4)
+			if value, ok := v.(string); ok {
+				m[k] = mask(value, 4)
+			}
+		case "card":
+			if value, ok := v.(map[string]interface{}); ok {
+				if number, ok := value["number"].(string); ok {
+					value["number"] = mask(number, 4)
+					m[k] = value
+				}
+			}
 		}
 	}
 
