@@ -48,6 +48,11 @@ func MaskCard(s string) string {
 					value["number"] = mask(number, 4)
 					m[k] = value
 				}
+
+				if securityCode, ok := value["securityCode"].(string); ok {
+					value["securityCode"] = mask(securityCode, len(securityCode))
+					m[k] = value
+				}
 			}
 		}
 	}

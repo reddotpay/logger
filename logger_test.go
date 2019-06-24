@@ -30,8 +30,8 @@ func TestLogger_MaskCVV(t *testing.T) {
 }
 
 func TestLogger_MaskNestedCard(t *testing.T) {
-	s := `{"card":{"number":"4111111111111111"}}`
-	assert.Equal(t, "{\"card\":{\"number\":\"************1111\"}}", logger.MaskCard(s))
+	s := `{"card":{"number":"4111111111111111","securityCode":"123"}}`
+	assert.Equal(t, "{\"card\":{\"number\":\"************1111\",\"securityCode\":\"***\"}}", logger.MaskCard(s))
 }
 
 func TestLogger_MaskCard(t *testing.T) {
