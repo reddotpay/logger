@@ -44,15 +44,13 @@ func MaskCard(s string) string {
 			}
 		case "card":
 			if value, ok := v.(map[string]interface{}); ok {
-				if number, ok := value["number"].(string); ok {
-					value["number"] = mask(number, 4)
-					m[k] = value
-				}
+				var (
+					b, _ = json.Marshal(value)
+					m2   = map[string]interface{}{}
+				)
 
-				if securityCode, ok := value["securityCode"].(string); ok {
-					value["securityCode"] = mask(securityCode, len(securityCode))
-					m[k] = value
-				}
+				_ = json.Unmarshal([]byte(MaskCard(string(b))), &m2)
+				m[k] = m2
 			}
 		}
 	}
