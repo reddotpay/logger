@@ -28,9 +28,11 @@ func New() *zap.Logger {
 	return zapLogger
 }
 
-// MaskCard masks card number if exists
+// MaskCard masks card number and cvv if exists
 func MaskCard(s string) string {
 	m := map[string]interface{}{}
+
+	// Check if string is JSON and mask card
 	if err := json.Unmarshal([]byte(s), &m); err == nil {
 		for k, v := range m {
 			switch strings.ToLower(k) {
@@ -60,6 +62,7 @@ func MaskCard(s string) string {
 		return string(b)
 	}
 
+	// Check if string is URL encoded and mask card
 	if values, err := url.ParseQuery(s); strings.Contains(s, "=") && err == nil {
 		newValues := url.Values{}
 		for k, v := range values {
@@ -96,18 +99,15 @@ func MaskCard(s string) string {
 		return buf.String()
 	}
 
+	// Check if string is XML and mask card
 	r := regexp.MustCompile(`(?i)<(number|cardnumber|cardnum|cardno)>(\d{16,19})<\/(number|cardnumber|cardnum|cardno)>`)
 	if m := r.FindStringSubmatch(s); len(m) == 4 {
-		l := len(m[2])
-		maskedNumber := fmt.Sprintf("%s%s", strings.Repeat("*", l-4), m[2][l-4:])
-		s = r.ReplaceAllString(s, fmt.Sprintf("<%s>%s</%s>", m[1], maskedNumber, m[3]))
+		s = r.ReplaceAllString(s, fmt.Sprintf("<%s>%s</%s>", m[1], mask(m[2], 4), m[3]))
 	}
 
 	r = regexp.MustCompile(`(?i)<(cvv|securitycode)>(\d{3,4})<\/(cvv|securitycode)>`)
 	if m := r.FindStringSubmatch(s); len(m) == 4 {
-		l := len(m[2])
-		maskedCVV := fmt.Sprintf("%s", strings.Repeat("*", l))
-		s = r.ReplaceAllString(s, fmt.Sprintf("<%s>%s</%s>", m[1], maskedCVV, m[3]))
+		s = r.ReplaceAllString(s, fmt.Sprintf("<%s>%s</%s>", m[1], mask(m[2], len(m[2])), m[3]))
 	}
 
 	return s
