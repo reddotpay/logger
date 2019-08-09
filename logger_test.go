@@ -83,3 +83,18 @@ func TestLogger_URL_MaskCard_NoMatch(t *testing.T) {
 	s := `hello=world&foo=bar`
 	assert.Equal(t, "foo=bar&hello=world", logger.MaskCard(s))
 }
+
+func TestLogger_XML_MaskCard(t *testing.T) {
+	s := `<Message><CardNumber>4111111111111111</CardNumber><Hello>World</Hello><SecurityCode>123</SecurityCode></Message>`
+	assert.Equal(t, "<Message><CardNumber>************1111</CardNumber><Hello>World</Hello><SecurityCode>***</SecurityCode></Message>", logger.MaskCard(s))
+}
+
+func TestLogger_XML_MaskCardNumber(t *testing.T) {
+	s := `<Message><Number>4111111111111111</Number></Message>`
+	assert.Equal(t, "<Message><Number>************1111</Number></Message>", logger.MaskCard(s))
+}
+
+func TestLogger_XML_MaskCVV(t *testing.T) {
+	s := `<Message><CVV>123</CVV></Message>`
+	assert.Equal(t, "<Message><CVV>***</CVV></Message>", logger.MaskCard(s))
+}

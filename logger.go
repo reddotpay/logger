@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -93,6 +94,20 @@ func MaskCard(s string) string {
 		}
 
 		return buf.String()
+	}
+
+	r := regexp.MustCompile(`(?i)<(number|cardnumber|cardnum|cardno)>(\d{16,19})<\/(number|cardnumber|cardnum|cardno)>`)
+	if m := r.FindStringSubmatch(s); len(m) == 4 {
+		l := len(m[2])
+		maskedNumber := fmt.Sprintf("%s%s", strings.Repeat("*", l-4), m[2][l-4:])
+		s = r.ReplaceAllString(s, fmt.Sprintf("<%s>%s</%s>", m[1], maskedNumber, m[3]))
+	}
+
+	r = regexp.MustCompile(`(?i)<(cvv|securitycode)>(\d{3,4})<\/(cvv|securitycode)>`)
+	if m := r.FindStringSubmatch(s); len(m) == 4 {
+		l := len(m[2])
+		maskedCVV := fmt.Sprintf("%s", strings.Repeat("*", l))
+		s = r.ReplaceAllString(s, fmt.Sprintf("<%s>%s</%s>", m[1], maskedCVV, m[3]))
 	}
 
 	return s
