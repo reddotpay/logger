@@ -40,7 +40,7 @@ func MaskCard(s string) string {
 				if value, ok := v.(string); ok {
 					m[k] = mask(value, len(value))
 				}
-			case "number", "cardnumber", "cardnum", "cardno":
+			case "number", "cardnumber", "cardnum", "cardno", "accountnumber":
 				if value, ok := v.(string); ok {
 					m[k] = mask(value, 4)
 				}
