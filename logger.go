@@ -40,7 +40,7 @@ func MaskCard(s string) string {
 				if value, ok := v.(string); ok {
 					m[k] = mask(value, len(value))
 				}
-			case "number", "cardnumber", "cardnum", "cardno", "accountnumber":
+			case "number", "cardnumber", "cardnum", "cardno", "accountnumber", "card_no":
 				if value, ok := v.(string); ok {
 					m[k] = mask(value, 4)
 				}
@@ -69,7 +69,7 @@ func MaskCard(s string) string {
 			switch strings.ToLower(k) {
 			case "cvv", "securitycode":
 				newValues[k] = []string{mask(v[0], len(v[0]))}
-			case "number", "cardnumber", "cardnum", "cardno":
+			case "number", "cardnumber", "cardnum", "cardno", "accountnumber", "card_no":
 				newValues[k] = []string{mask(v[0], 4)}
 			default:
 				newValues[k] = v
@@ -100,7 +100,7 @@ func MaskCard(s string) string {
 	}
 
 	// Check if string is XML and mask card
-	r := regexp.MustCompile(`(?i)<(number|cardnumber|cardnum|cardno)>(\d{16,19})<\/(number|cardnumber|cardnum|cardno)>`)
+	r := regexp.MustCompile(`(?i)<(number|cardnumber|cardnum|cardno)>(\d{16,19})<\/(number|cardnumber|cardnum|cardno|accountnumber)>`)
 	if m := r.FindStringSubmatch(s); len(m) == 4 {
 		s = r.ReplaceAllString(s, fmt.Sprintf("<%s>%s</%s>", m[1], mask(m[2], 4), m[3]))
 	}
