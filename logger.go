@@ -100,7 +100,7 @@ func MaskCard(s string) string {
 	}
 
 	// Check if string is XML and mask card
-	r := regexp.MustCompile(`(?i)<(number|cardnumber|cardnum|cardno|accountnumber)>(\d{16,19})<\/(number|cardnumber|cardnum|cardno|accountnumber)>`)
+	r := regexp.MustCompile(`(?i)<(number|cardnumber|cardnum|cardno|accountnumber)>(\d+)<\/(number|cardnumber|cardnum|cardno|accountnumber)>`)
 	if m := r.FindStringSubmatch(s); len(m) == 4 {
 		s = r.ReplaceAllString(s, fmt.Sprintf("<%s>%s</%s>", m[1], mask(m[2], 4), m[3]))
 	}
