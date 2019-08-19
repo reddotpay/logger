@@ -105,7 +105,7 @@ func MaskCard(s string) string {
 		s = r.ReplaceAllString(s, fmt.Sprintf("<%s>%s</%s>", m[1], mask(m[2], 4), m[3]))
 	}
 
-	r = regexp.MustCompile(`(?i)<(cvv|securitycode)>(\d{3,4})<\/(cvv|securitycode)>`)
+	r = regexp.MustCompile(`(?i)<(cvv|securitycode|cvnumber)>(\d{3,4})<\/(cvv|securitycode|cvnumber)>`)
 	if m := r.FindStringSubmatch(s); len(m) == 4 {
 		s = r.ReplaceAllString(s, fmt.Sprintf("<%s>%s</%s>", m[1], mask(m[2], len(m[2])), m[3]))
 	}
