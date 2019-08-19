@@ -36,7 +36,7 @@ func MaskCard(s string) string {
 	if err := json.Unmarshal([]byte(s), &m); err == nil {
 		for k, v := range m {
 			switch strings.ToLower(k) {
-			case "cvv", "securitycode", "cvnumber":
+			case "cvv", "securitycode":
 				if value, ok := v.(string); ok {
 					m[k] = mask(value, len(value))
 				}
@@ -62,12 +62,12 @@ func MaskCard(s string) string {
 		return string(b)
 	}
 
-	// Check if string is URL encoded and mask card
-	if values, err := url.ParseQuery(s); strings.Contains(s, "=") && err == nil {
+	// Check if string is URL encoded and does not contain `<`, and mask card
+	if values, err := url.ParseQuery(s); !strings.Contains(s, "<") && strings.Contains(s, "=") && err == nil {
 		newValues := url.Values{}
 		for k, v := range values {
 			switch strings.ToLower(k) {
-			case "cvv", "securitycode", "cvnumber":
+			case "cvv", "securitycode":
 				newValues[k] = []string{mask(v[0], len(v[0]))}
 			case "number", "cardnumber", "cardnum", "cardno", "accountnumber", "card_no":
 				newValues[k] = []string{mask(v[0], 4)}
@@ -105,7 +105,7 @@ func MaskCard(s string) string {
 		s = r.ReplaceAllString(s, fmt.Sprintf("<%s>%s</%s>", m[1], mask(m[2], 4), m[3]))
 	}
 
-	r = regexp.MustCompile(`(?i)<(cvv|securitycode|cvnumber)>(\d+)<\/(cvv|securitycode|cvnumber)>`)
+	r = regexp.MustCompile(`(?i)<(cvv|securitycode|cvNumber)>(\d{3,4})<\/(cvv|securitycode|cvNumber)>`)
 	if m := r.FindStringSubmatch(s); len(m) == 4 {
 		s = r.ReplaceAllString(s, fmt.Sprintf("<%s>%s</%s>", m[1], mask(m[2], len(m[2])), m[3]))
 	}
