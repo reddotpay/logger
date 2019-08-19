@@ -95,6 +95,6 @@ func TestLogger_XML_MaskCardNumber(t *testing.T) {
 }
 
 func TestLogger_XML_MaskCVV(t *testing.T) {
-	s := `<Message><CVV>123</CVV></Message>`
-	assert.Equal(t, "<Message><CVV>***</CVV></Message>", logger.MaskCard(s))
+	s := `<Message><cvNumber>123</cvNumber></Message>`
+	assert.Equal(t, "<Message><cvNumber>***</cvNumber></Message>", logger.MaskCard(s))
 }
