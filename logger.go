@@ -44,7 +44,7 @@ func MaskCard(s string) string {
 				if value, ok := v.(string); ok {
 					m[k] = mask(value, 4)
 				}
-			case "card":
+			case "card", "customer":
 				if value, ok := v.(map[string]interface{}); ok {
 					var (
 						b, _ = json.Marshal(value)
