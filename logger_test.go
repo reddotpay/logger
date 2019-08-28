@@ -44,6 +44,11 @@ func TestLogger_JSON_MaskCard(t *testing.T) {
 	assert.Equal(t, "{\"card\":{\"number\":\"************1111\"},\"cvv\":\"***\",\"number\":\"************1111\"}", logger.MaskCard(s))
 }
 
+func TestLogger_JSON_MaskCard_Nested(t *testing.T) {
+	s := `{"sourceOfFunds":{"provided":{"card":{"number":4111111111111111}}}}`
+	assert.Equal(t, "{\"sourceOfFunds\":{\"provided\":{\"card\":{\"number\":\"************1111\"}}}}", logger.MaskCard(s))
+}
+
 func TestLogger_JSON_MaskCard_EmptyString(t *testing.T) {
 	s := ""
 	assert.Equal(t, "", logger.MaskCard(s))

@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	"go.uber.org/zap"
@@ -43,8 +44,10 @@ func MaskCard(s string) string {
 			case "number", "cardnumber", "cardnum", "cardno", "accountnumber", "card_no":
 				if value, ok := v.(string); ok {
 					m[k] = mask(value, 4)
+				} else if value, ok := v.(float64); ok {
+					m[k] = mask(strconv.Itoa(int(value)), 4)
 				}
-			case "card", "customer", "sourceOfFunds", "provided":
+			case "card", "customer", "sourceoffunds", "provided":
 				if value, ok := v.(map[string]interface{}); ok {
 					var (
 						b, _ = json.Marshal(value)
