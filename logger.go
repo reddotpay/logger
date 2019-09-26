@@ -20,7 +20,9 @@ var Client Logger
 type Logger interface {
 	Info(key string, fields ...zapcore.Field)
 	Error(key string, fields ...zapcore.Field)
+	Core() zapcore.Core
 	Sync() error
+	WithOptions(opts ...zap.Option) *zap.Logger
 }
 
 // New initialises a new zap logger
