@@ -38,26 +38,35 @@ func MaskCard(s string) string {
 	// Check if string is JSON and mask card
 	if err := json.Unmarshal([]byte(s), &m); err == nil {
 		for k, v := range m {
+			if value, ok := v.(map[string]interface{}); ok {
+				var (
+					b, _ = json.Marshal(value)
+					m2   = map[string]interface{}{}
+				)
+
+				_ = json.Unmarshal([]byte(MaskCard(string(b))), &m2)
+				m[k] = m2
+				continue
+			}
+
 			switch strings.ToLower(k) {
-			case "cvv", "securitycode":
+			case "cvv",
+				"credit_card_cvv",
+				"securitycode":
 				if value, ok := v.(string); ok {
 					m[k] = mask(value, len(value))
 				}
-			case "number", "cardnumber", "cardnum", "cardno", "accountnumber", "card_no":
+			case "number",
+				"cardnumber",
+				"cardnum",
+				"cardno",
+				"accountnumber",
+				"card_number",
+				"card_no":
 				if value, ok := v.(string); ok {
 					m[k] = mask(value, 4)
 				} else if value, ok := v.(float64); ok {
 					m[k] = mask(strconv.Itoa(int(value)), 4)
-				}
-			case "card", "customer", "sourceoffunds", "provided":
-				if value, ok := v.(map[string]interface{}); ok {
-					var (
-						b, _ = json.Marshal(value)
-						m2   = map[string]interface{}{}
-					)
-
-					_ = json.Unmarshal([]byte(MaskCard(string(b))), &m2)
-					m[k] = m2
 				}
 			}
 		}
