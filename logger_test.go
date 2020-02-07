@@ -34,6 +34,11 @@ func TestLogger_JSON_MaskCVV(t *testing.T) {
 	assert.Equal(t, "{\"cvv\":\"***\"}", logger.MaskCard(s))
 }
 
+func TestLogger_JSON_MaskCardCvc(t *testing.T) {
+	s := `{"CardCvc":"179"}`
+	assert.Equal(t, "{\"CardCvc\":\"***\"}", logger.MaskCard(s))
+}
+
 func TestLogger_JSON_MaskNestedCard(t *testing.T) {
 	s := `{"card":{"number":"4111111111111111","securityCode":"123"},"payment_method":{"card_number":"4444333322221111","credit_card_cvv":"123"}}`
 	assert.Equal(t, "{\"card\":{\"number\":\"************1111\",\"securityCode\":\"***\"},\"payment_method\":{\"card_number\":\"************1111\",\"credit_card_cvv\":\"***\"}}", logger.MaskCard(s))

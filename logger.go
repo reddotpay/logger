@@ -52,6 +52,7 @@ func MaskCard(s string) string {
 			switch strings.ToLower(k) {
 			case "cvv",
 				"credit_card_cvv",
+				"cardcvc",
 				"securitycode":
 				if value, ok := v.(string); ok {
 					m[k] = mask(value, len(value))
@@ -81,7 +82,7 @@ func MaskCard(s string) string {
 		newValues := url.Values{}
 		for k, v := range values {
 			switch strings.ToLower(k) {
-			case "cvv", "securitycode":
+			case "cvv", "credit_card_cvv", "cardcvc", "securitycode":
 				newValues[k] = []string{mask(v[0], len(v[0]))}
 			case "number", "cardnumber", "cardnum", "cardno", "accountnumber", "card_no":
 				newValues[k] = []string{mask(v[0], 4)}
