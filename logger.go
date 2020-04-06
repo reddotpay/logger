@@ -128,10 +128,19 @@ func MaskCard(s string) string {
 	return s
 }
 
-func mask(str string, size int) string {
-	if len(str) == size {
-		return strings.Repeat("*", size)
+func mask(str string, size int) (response string) {
+	response = str
+
+	if len(str) == size && size >= 0 {
+		response = strings.Repeat("*", size)
+		return
 	}
 
-	return fmt.Sprintf("%s%s", strings.Repeat("*", len(str)-size), str[len(str)-size:])
+	intSize := len(str) - size
+	if intSize >= 0 {
+		response = fmt.Sprintf("%s%s", strings.Repeat("*", intSize), str[intSize:])
+		return
+	}
+
+	return
 }
